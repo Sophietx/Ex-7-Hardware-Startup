@@ -254,7 +254,7 @@ def main():
     # This command can be useful for diagnostic purposes, it gets the number of times a command
     # was sent to the board, but the communication failed.  If communication fails, the DPi 
     # library adds one to the error count, then automatically resends the command.  If that
-    # fails 3 times in a row, the function gives up and returns "False".
+    # fails 3 times in a row, the funct  ion gives up and returns "False".
     #
     comm_errors = dpiStepper.getCommErrorCount()
     print(f"Communication errors count = {comm_errors}")
