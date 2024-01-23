@@ -59,3 +59,20 @@ class FirstScreen(Screen):
 
 Builder.load_file('first.kv')
 SCREEN_MANAGER.add_widget(FirstScreen(name=FIRST_SCREEN_NAME))
+
+def send_event(event_name):
+    """
+    Send an event to MixPanel without properties
+    :param event_name: Name of the event
+    :return: None
+    """
+    global MIXPANEL
+
+    MIXPANEL.set_event_name(event_name)
+    MIXPANEL.send_event()
+
+
+if __name__ == "__main__":
+    # send_event("Project Initialized")
+    # Window.fullscreen = 'auto'
+    ProjectNameGUI().run()
