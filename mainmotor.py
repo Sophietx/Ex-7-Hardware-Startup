@@ -27,7 +27,8 @@ from kivy.animation import Animation
 
 from datetime import datetime
 
-
+from dpeaDPi.DPiStepper import DPiStepper
+from time import sleep
 
 time = datetime
 
@@ -53,6 +54,8 @@ class ProjectNameGUI(App):
 Window.clearcolor = (.132, .156, .194, 1)  # White
 
 button_toggle = False
+
+dpiStepper = DPiStepper()
 
 class FirstScreen(Screen):
     pass
