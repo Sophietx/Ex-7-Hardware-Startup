@@ -25,9 +25,12 @@ from pidev.kivy.selfupdatinglabel import SelfUpdatingLabel
 from kivy.uix.image import Image
 from kivy.animation import Animation
 
+
 from datetime import datetime
 
 from dpeaDPi.DPiStepper import DPiStepper
+
+import threading
 from time import sleep
 
 time = datetime
@@ -58,7 +61,31 @@ button_toggle = False
 dpiStepper = DPiStepper()
 
 class FirstScreen(Screen):
-    pass
+    def rotateonce(self, button):
+        dpiStepper.enableMotors(True)
+
+        microstepping = 8
+        dpiStepper.setMicrostepping(microstepping)
+
+        speed_steps_per_second = 200 * microstepping
+        accel_steps_per_second_per_second = speed_steps_per_second
+        dpiStepper.setSpeedInStepsPerSecond(0, speed_steps_per_second)
+
+        dpiStepper.setAccelerationInStepsPerSecondPerSecond(0, accel_steps_per_second_per_second)
+
+        stepper_num = 0
+        steps = 1600
+        wait_to_finish_moving_flg = True
+        dpiStepper.moveToRelativePositionInSteps(stepper_num, steps, wait_to_finish_moving_flg)
+    def whatsgoingon(self, button):
+        if button.text == 'on':
+            dpiStepper.enableMotors(True)
+            threading.Thread(target=self.spinDirection, daemon=True).start()
+
+        if button.text == 'off':
+            dpiStepper.enableMotors(False)
+
+
 
 Builder.load_file('first.kv')
 SCREEN_MANAGER.add_widget(FirstScreen(name=FIRST_SCREEN_NAME))

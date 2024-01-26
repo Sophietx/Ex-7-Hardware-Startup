@@ -6,9 +6,19 @@
         size_hint: None, None
 
     DPEAButton:
-        id: test_button
-        text: 'i hope this stuff works'
+        id: button_one
+        text: 'on'
         size: 100, 100
         x: root.width * 0.75
         y: root.height * 0.5
         color: 0.5, 1, 0.7, 1
+        on_press: root.whatsgoingon(button_one)
+
+    DPEAButton:
+        id: button_two
+        text: 'off'
+        size: 100, 100
+        x: root.width * 0.25
+        y: root.height * 0.5
+        color: 1, 0.7, 0.5, 1
+        on_press: root.whatsgoingon(button_two)
