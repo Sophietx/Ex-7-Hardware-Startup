@@ -61,29 +61,79 @@ button_toggle = False
 dpiStepper = DPiStepper()
 
 class FirstScreen(Screen):
-    def rotateonce(self, button):
-        dpiStepper.enableMotors(True)
 
-        microstepping = 8
-        dpiStepper.setMicrostepping(microstepping)
+    global StepperDirection
 
-        speed_steps_per_second = 200 * microstepping
-        accel_steps_per_second_per_second = speed_steps_per_second
-        dpiStepper.setSpeedInStepsPerSecond(0, speed_steps_per_second)
 
-        dpiStepper.setAccelerationInStepsPerSecondPerSecond(0, accel_steps_per_second_per_second)
-
-        stepper_num = 0
-        steps = 1600
-        wait_to_finish_moving_flg = True
-        dpiStepper.moveToRelativePositionInSteps(stepper_num, steps, wait_to_finish_moving_flg)
     def whatsgoingon(self, button):
+
+        global StepperDirection
+
         if button.text == 'on':
+            StepperDirection = True
             dpiStepper.enableMotors(True)
-            threading.Thread(target=self.spinDirection, daemon=True).start()
+            threading.Thread(target=self.spinDirection, args=(button,), daemon=True).start()
 
         if button.text == 'off':
             dpiStepper.enableMotors(False)
+
+    def spinDirection(self, button):
+
+        stepper_num = 0
+        gear_ratio = 1
+        motorStepPerRevolution = 1600 * gear_ratio
+        dpiStepper.setStepsPerRevolution(stepper_num, motorStepPerRevolution)
+
+        speed_in_revolutions_per_sec = 2.0
+        accel_in_revolutions_per_sec_per_sec = 2.0
+        dpiStepper.setSpeedInRevolutionsPerSecond(stepper_num, speed_in_revolutions_per_sec)
+        dpiStepper.setAccelerationInRevolutionsPerSecondPerSecond(stepper_num, accel_in_revolutions_per_sec_per_sec)
+
+        dpiStepper.setCurrentPositionInRevolutions(stepper_num, 0.0)
+
+        print('starting 20 turns')
+
+        waitToFinishFlg = True
+        dpiStepper.moveToAbsolutePositionInRevolutions(stepper_num, 20.0, waitToFinishFlg)
+
+    def spinOtherDirection(self, button):
+
+        stepper_num = 0
+        gear_ratio = 1
+        motorStepPerRevolution = 1600 * gear_ratio
+        dpiStepper.setStepsPerRevolution(stepper_num, motorStepPerRevolution)
+
+        speed_in_revolutions_per_sec = 2.0
+        accel_in_revolutions_per_sec_per_sec = 2.0
+        dpiStepper.setSpeedInRevolutionsPerSecond(stepper_num, speed_in_revolutions_per_sec)
+        dpiStepper.setAccelerationInRevolutionsPerSecondPerSecond(stepper_num, accel_in_revolutions_per_sec_per_sec)
+
+        dpiStepper.setCurrentPositionInRevolutions(stepper_num, 0.0)
+
+        print('starting 20 turns')
+
+        waitToFinishFlg = True
+        dpiStepper.moveToAbsolutePositionInRevolutions(stepper_num, -20.0, waitToFinishFlg)
+
+
+
+    def changedir(self, button):
+
+        global StepperDirection
+
+        if StepperDirection == True:
+
+            StepperDirection = False
+            print('Changing direction')
+            threading.Thread(target=self.spinOtherDirection, args=(button,), daemon=True).start()
+
+        if StepperDirection == False:
+
+            print('Changing direction')
+            StepperDirection = True
+            threading.Thread(target=self.spinDirection, args=(button,), daemon=True).start()
+
+
 
 
 
