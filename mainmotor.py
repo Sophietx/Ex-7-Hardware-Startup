@@ -59,23 +59,43 @@ Window.clearcolor = (.132, .156, .194, 1)  # White
 button_toggle = False
 
 dpiStepper = DPiStepper()
+dpiStepper.setBoardNumber(0)
+
+
+Window.clearcolor = (1, 1, 1, 1)  # White
 
 class FirstScreen(Screen):
-
-    global StepperDirection
-
-
     def whatsgoingon(self, button):
 
         global StepperDirection
 
         if button.text == 'on':
+            if dpiStepper.initialize() != True:
+                print("Communication with the DPiStepper board failed.")
+                return
             StepperDirection = True
             dpiStepper.enableMotors(True)
             threading.Thread(target=self.spinDirection, args=(button,), daemon=True).start()
 
-        if button.text == 'off':
+        elif button.text == 'off':
+            if dpiStepper.initialize() != True:
+                print("Communication with the DPiStepper board failed.")
+                return
             dpiStepper.enableMotors(False)
+
+        elif button.text == 'change direction':
+            if dpiStepper.initialize() != True:
+                print("Communication with the DPiStepper board failed.")
+                return
+            dpiStepper.enableMotors(True)
+            if StepperDirection == True:
+                StepperDirection = False
+                threading.Thread(target=self.spinOtherDirection, args=(button,), daemon=True).start()
+            else:
+                StepperDirection = True
+                threading.Thread(target=self.spinDirection, args=(button,), daemon=True).start()
+
+
 
     def spinDirection(self, button):
 
@@ -91,9 +111,9 @@ class FirstScreen(Screen):
 
         dpiStepper.setCurrentPositionInRevolutions(stepper_num, 0.0)
 
-        print('starting 20 turns')
+        print('starting 20 turns clockwise')
 
-        waitToFinishFlg = True
+        waitToFinishFlg = False
         dpiStepper.moveToAbsolutePositionInRevolutions(stepper_num, 20.0, waitToFinishFlg)
 
     def spinOtherDirection(self, button):
@@ -110,30 +130,12 @@ class FirstScreen(Screen):
 
         dpiStepper.setCurrentPositionInRevolutions(stepper_num, 0.0)
 
-        print('starting 20 turns')
+        print('starting 20 turns counterclockwise')
 
-        waitToFinishFlg = True
+        waitToFinishFlg = False
         dpiStepper.moveToAbsolutePositionInRevolutions(stepper_num, -20.0, waitToFinishFlg)
 
-
-
-    def changedir(self, button):
-
-        global StepperDirection
-
-        if StepperDirection == True:
-
-            StepperDirection = False
-            print('Changing direction')
-            threading.Thread(target=self.spinOtherDirection, args=(button,), daemon=True).start()
-
-        if StepperDirection == False:
-
-            print('Changing direction')
-            StepperDirection = True
-            threading.Thread(target=self.spinDirection, args=(button,), daemon=True).start()
-
-
+    def sliding(self):
 
 
 
