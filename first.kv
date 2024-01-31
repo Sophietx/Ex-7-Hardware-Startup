@@ -34,7 +34,7 @@
 
 
     Slider:
-        id: slider
+        id: slider_id
         min: 0
         max: 10
         step: 1
@@ -43,4 +43,13 @@
         size: 200, 30  # Adjust size as needed
         pos: root.width * 0.5 - self.width / 2, root.height * 0.1
         on_touch_move: root.sliding()
-        on_touch_down: root.slitherin()
+        on_touch_down: root.sliding()
+
+    DPEAButton:
+        id: button_four
+        text: 'womp womp'
+        size: 100, 100
+        x: root.width * 0.5
+        y: root.height * 0.25
+        color: 0, 0, 0, 1
+        on_press: root.danceydance(button_four)

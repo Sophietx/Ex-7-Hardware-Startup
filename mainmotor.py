@@ -53,9 +53,6 @@ class ProjectNameGUI(App):
         """
         return SCREEN_MANAGER
 
-
-Window.clearcolor = (.132, .156, .194, 1)  # White
-
 button_toggle = False
 
 dpiStepper = DPiStepper()
@@ -81,6 +78,7 @@ class FirstScreen(Screen):
             if dpiStepper.initialize() != True:
                 print("Communication with the DPiStepper board failed.")
                 return
+            print('disabling motors')
             dpiStepper.enableMotors(False)
 
         elif button.text == 'change direction':
@@ -111,10 +109,10 @@ class FirstScreen(Screen):
 
         dpiStepper.setCurrentPositionInRevolutions(stepper_num, 0.0)
 
-        print('starting 20 turns clockwise')
+        print('starting to turn clockwise')
 
         waitToFinishFlg = False
-        dpiStepper.moveToAbsolutePositionInRevolutions(stepper_num, 20.0, waitToFinishFlg)
+        dpiStepper.moveToAbsolutePositionInRevolutions(stepper_num, 50.0, waitToFinishFlg)
 
     def spinOtherDirection(self, button):
 
@@ -130,12 +128,100 @@ class FirstScreen(Screen):
 
         dpiStepper.setCurrentPositionInRevolutions(stepper_num, 0.0)
 
-        print('starting 20 turns counterclockwise')
+        print('starting to turn counterclockwise')
 
         waitToFinishFlg = False
-        dpiStepper.moveToAbsolutePositionInRevolutions(stepper_num, -20.0, waitToFinishFlg)
+        dpiStepper.moveToAbsolutePositionInRevolutions(stepper_num, -50.0, waitToFinishFlg)
 
     def sliding(self):
+        stepper_num = 0
+        gear_ratio = 1
+        motorStepPerRevolution = 1600 * gear_ratio
+        dpiStepper.setStepsPerRevolution(stepper_num, motorStepPerRevolution)
+
+        # Reference the Slider using its ID
+        speed_in_revolutions_per_sec = int(self.ids.slider_id.value)
+        accel_in_revolutions_per_sec_per_sec = 2.0
+        dpiStepper.setSpeedInRevolutionsPerSecond(stepper_num, speed_in_revolutions_per_sec)
+        dpiStepper.setAccelerationInRevolutionsPerSecondPerSecond(stepper_num, accel_in_revolutions_per_sec_per_sec)
+
+        dpiStepper.setCurrentPositionInRevolutions(stepper_num, 0.0)
+
+        print('speed ' + str(self.ids.slider_id.value))
+        waitToFinishFlg = False
+        dpiStepper.moveToAbsolutePositionInRevolutions(stepper_num, 50.0, waitToFinishFlg)
+
+    def danceydance(self, button):
+
+        dpiStepper.enableMotors(True)
+
+        currentPosition = dpiStepper.getCurrentPositionInSteps(0)[1]
+        print(f"Pos = {currentPosition}")
+        sleep(1)
+
+        threading.Thread(target=self.one, args=(button,), daemon=True).start()
+        threading.Thread(target=self.two, args=(button,), daemon=True).start()
+
+
+    def one(self):
+
+        currentPosition = dpiStepper.getCurrentPositionInSteps(0)[1]
+        print(f"Pos = {currentPosition}")
+        sleep(1)
+
+        stepper_num = 0
+        gear_ratio = 1
+        motorStepPerRevolution = 1600 * gear_ratio
+        dpiStepper.setStepsPerRevolution(stepper_num, motorStepPerRevolution)
+
+        speed_in_revolutions_per_sec = 1.0
+        accel_in_revolutions_per_sec_per_sec = 2.0
+        dpiStepper.setSpeedInRevolutionsPerSecond(stepper_num, speed_in_revolutions_per_sec)
+        dpiStepper.setAccelerationInRevolutionsPerSecondPerSecond(stepper_num, accel_in_revolutions_per_sec_per_sec)
+
+        dpiStepper.setCurrentPositionInRevolutions(stepper_num, 0.0)
+
+        print('starting 15 turns clockwise')
+        print('speed = ' + str(speed_in_revolutions_per_sec))
+
+        waitToFinishFlg = False
+        dpiStepper.moveToAbsolutePositionInRevolutions(stepper_num, 15.0, waitToFinishFlg)
+
+        print('sleeping 10 seconds')
+        sleep(10)
+
+
+    def two(self):
+
+        currentPosition = dpiStepper.getCurrentPositionInSteps(0)[1]
+        print(f"Pos = {currentPosition}")
+        sleep(1)
+
+        stepper_num = 0
+        gear_ratio = 1
+        motorStepPerRevolution = 1600 * gear_ratio
+        dpiStepper.setStepsPerRevolution(stepper_num, motorStepPerRevolution)
+
+        speed_in_revolutions_per_sec = 5
+        accel_in_revolutions_per_sec_per_sec = 2.0
+        dpiStepper.setSpeedInRevolutionsPerSecond(stepper_num, speed_in_revolutions_per_sec)
+        dpiStepper.setAccelerationInRevolutionsPerSecondPerSecond(stepper_num, accel_in_revolutions_per_sec_per_sec)
+
+        dpiStepper.setCurrentPositionInRevolutions(stepper_num, 0.0)
+
+        print('starting 10 turns clockwise')
+        print('speed = ' + str(speed_in_revolutions_per_sec))
+
+        waitToFinishFlg = False
+        dpiStepper.moveToAbsolutePositionInRevolutions(stepper_num, 15.0, waitToFinishFlg)
+
+        print('sleeping 8 seconds')
+        sleep(8)
+
+    def three(self):
+        pass
+
+
 
 
 
