@@ -51,7 +51,7 @@ for i in range(180):
     sleep(.05)
 
 
-# Rotate the motor plugged into to "SERVO 0", From 180deg to 0deg
+# Rotate the motor plugged into to "SERVO 1", From 180deg to 0deg
 #
 print("  Rotate Servo 1 CCW")
 i = 0

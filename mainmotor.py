@@ -29,9 +29,13 @@ from kivy.animation import Animation
 from datetime import datetime
 
 from dpeaDPi.DPiStepper import DPiStepper
+from dpeaDPi.DPiComputer import *
+
 
 import threading
 from time import sleep
+
+
 
 time = datetime
 
@@ -40,6 +44,8 @@ MIXPANEL = MixPanel("Project Name", MIXPANEL_TOKEN)
 
 SCREEN_MANAGER = ScreenManager()
 FIRST_SCREEN_NAME = 'first'
+SECOND_SCREEN_NAME = 'second'
+THIRD_SCREEN_NAME = 'third'
 
 class ProjectNameGUI(App):
     """
@@ -283,12 +289,137 @@ class FirstScreen(Screen):
         currentPosition = dpiStepper.getCurrentPositionInSteps(0)[1]
         print(f"Pos = {currentPosition}")
 
+    def switch(self):
+        SCREEN_MANAGER.current = SECOND_SCREEN_NAME
+
+class SecondScreen(Screen):
+
+
+    def switchback(self):
+        SCREEN_MANAGER.current = FIRST_SCREEN_NAME
+
+    def gotothird(self):
+        SCREEN_MANAGER.current = THIRD_SCREEN_NAME
+
+    def oneeighty(self):
+        dpiComputer = DPiComputer()
+        dpiComputer.initialize()
+
+        i = 0
+        servo_number = 0
+        for i in range(180):
+            dpiComputer.writeServo(servo_number, i)
+            sleep(.05)
+
+    def zero(self):
+        dpiComputer = DPiComputer()
+        dpiComputer.initialize()
+
+        i = 0
+        servo_number = 0
+        for i in range(180, 0, -1):
+            dpiComputer.writeServo(servo_number, i)
+            sleep(.05)
+
+    def servo_control(self):
+
+        dpiComputer = DPiComputer()
+        dpiComputer.initialize()
+
+        value = dpiComputer.readDigitalIn(dpiComputer.IN_CONNECTOR__IN_0)
+        dpiComputer.writeDigitalOut(dpiComputer.OUT_CONNECTOR__OUT_2, value)
+
+        value = dpiComputer.readDigitalIn(dpiComputer.IN_CONNECTOR__IN_0)
+        dpiComputer.writeDigitalOut(dpiComputer.OUT_CONNECTOR__OUT_2, value)
+        while True:
+            if (dpiComputer.readDigitalIn(
+                    dpiComputer.IN_CONNECTOR__IN_0)):  # binary bitwise AND of the value returned from read.gpio()
+                sleep(1)
+                if (dpiComputer.readDigitalIn(dpiComputer.IN_CONNECTOR__IN_0)):  # a little debounce logic
+                    print("Input 0 is HIGH")
+                    self.oneeighty()
+            else:
+                print("Input 0 is LOW")
+                sleep(1)
+                self.zero()
+
+    def terminate(self):
+
+        sleep(1)
+        dpiComputer = DPiComputer()
+        dpiComputer.initialize()
+
+        print('centering motor')
+
+        i = 0
+        servo_number = 0
+        for i in range(90):
+            dpiComputer.writeServo(servo_number, i)
+            sleep(.05)
+
+    def switchcontrol(self):
+        # Create a thread for the servo control function
+        servo_thread = threading.Thread(target=self.servo_control)
+        servo_thread.daemon = True  # Daemonize the thread so it terminates when the main program exits
+
+        # Start the servo control thread
+        servo_thread.start()
+
+class ThirdScreen(Screen):
+
+    def Spinny(self):
+        dpiComputer = DPiComputer()
+        dpiComputer.initialize()
+
+        servo_number = 0
+        for i in range(90, 0, -1):
+            dpiComputer.writeServo(servo_number, i)
+            sleep(20/90)
+        dpiComputer.writeServo(0, 90) 
+
+    def limitswitchin(self):
+        dpiComputer = DPiComputer()
+        dpiComputer.initialize()
+
+        value = dpiComputer.readDigitalIn(dpiComputer.IN_CONNECTOR__IN_0)
+        dpiComputer.writeDigitalOut(dpiComputer.OUT_CONNECTOR__OUT_2, value)
+
+        value = dpiComputer.readDigitalIn(dpiComputer.IN_CONNECTOR__IN_0)
+        dpiComputer.writeDigitalOut(dpiComputer.OUT_CONNECTOR__OUT_2, value)
+        while True:
+            if (dpiComputer.readDigitalIn(
+                    dpiComputer.IN_CONNECTOR__IN_0)):  # binary bitwise AND of the value returned from read.gpio()
+                sleep(1)
+                if (dpiComputer.readDigitalIn(dpiComputer.IN_CONNECTOR__IN_0)):  # a little debounce logic
+                    print("Input 0 is HIGH")
+                    dpiComputer.writeServo(0, 90)
+                else:
+                    print("Input 0 is LOW")
+                    sleep(1)
+                    self.maxcw()
+
+    def maxcw(self):
+        dpiComputer = DPiComputer()
+        dpiComputer.initialize()
+
+        servo_number = 0
+        dpiComputer.writeServo(servo_number, 180)
+        sleep(.05)
+
+
 
 
 
 
 Builder.load_file('first.kv')
+Builder.load_file('second.kv')
+Builder.load_file('third.kv')
+
+
 SCREEN_MANAGER.add_widget(FirstScreen(name=FIRST_SCREEN_NAME))
+SCREEN_MANAGER.add_widget(SecondScreen(name=SECOND_SCREEN_NAME))
+SCREEN_MANAGER.add_widget(ThirdScreen(name=THIRD_SCREEN_NAME))
+
 
 def send_event(event_name):
     """

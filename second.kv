@@ -1,0 +1,42 @@
+<SecondScreen>:
+    #: import time __main__.time
+
+    name: 'second'
+    FloatLayout:
+        size_hint: None, None
+
+    DPEAButton:
+        id: button_a
+        text: 'go to stepper screen'
+        size: 100, 100
+        x: root.width * 0.5
+        y: root.height * 0.5
+        color: 0, 0, 0, 1
+        on_press: root.switchback()
+
+    DPEAButton:
+        id: button_b
+        text: 'control w/ limit switch'
+        size: 100, 100
+        x: root.width * 0.25
+        y: root.height * 0.5
+        color: 0, 1, 0, 1
+        on_press: root.switchcontrol()
+
+    DPEAButton:
+        id: button_c
+        text: 'stop'
+        size: 100, 100
+        x: root.width * 0.75
+        y: root.height * 0.5
+        color: 1, 0, 0, 1
+        on_press: root.terminate()
+
+    DPEAButton:
+        id: button_d
+        text: 'go to talon'
+        size: 100, 100
+        x: root.width * 0.75
+        y: root.height * 0.75
+        color: 1, 0, 0, 1
+        on_press: root.gotothird()
