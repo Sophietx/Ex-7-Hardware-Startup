@@ -227,8 +227,7 @@ def main():
     # Now let's move the motor to move 4 times, a quarter turn each, using absolute coodinates to
     # the 3 o'clock, 6 o'clock, 9 o'clock and 12 o'clock positions
     #
-    waitToFinishFlg = True
-    dpiStepper.moveToAbsolutePositionInRevolutions(stepper_num, 0.25, waitToFinishFlg)
+    28.7
     sleep(1)
     dpiStepper.moveToAbsolutePositionInRevolutions(stepper_num, 0.5, waitToFinishFlg)
     sleep(1)
